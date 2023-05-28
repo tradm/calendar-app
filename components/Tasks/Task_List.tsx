@@ -212,7 +212,7 @@ function Task_List() {
           </div>
         </form>
       </Dialog>
-      <div className="container max-w-6xl m-auto font-Roboto">
+      <div className="container max-w-6xl px-5 xl:px-0 m-auto font-Roboto">
         <div className="my-20">
           <div className="flex flex-row justify-between items-center">
             <div>
@@ -245,7 +245,7 @@ function Task_List() {
           <div className="mt-10 new-shadow rounded-lg overflow-hidden">
             <div className="font-semibold text-sm font-Roboto grid grid-cols-12 p-5 bg-[#f4f6f8] rounded-t-lg gap-3">
               <p>ID</p>
-              <p className="col-span-3">Title</p>
+              <p className="col-span-3 ml-3 sm:ml-0">Title</p>
               <p className="col-span-3">Starting Time</p>
               <p className="col-span-2">Duration Till</p>
               <p className="col-span-2">Status</p>
@@ -259,7 +259,7 @@ function Task_List() {
                   <p>{item.id}</p>
                   <Link
                     href={{ pathname: "/calendar", query: { id: item.id } }}
-                    className="col-span-3 mr-5 line-clamp-2 overflow-ellipsis hover:underline text-gray-800 hover:text-green-500"
+                    className="col-span-3 lg:mr-5 ml-3 sm:ml-0 line-clamp-2 overflow-ellipsis hover:underline text-gray-800 hover:text-green-500"
                   >
                     {item.title}
                   </Link>

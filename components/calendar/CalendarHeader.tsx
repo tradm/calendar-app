@@ -190,7 +190,7 @@ function Calendar() {
         </form>
       </Dialog>
       <div className="container max-w-6xl m-auto font-Roboto">
-        <div className="my-20">
+        <div className="my-20 px-5 lg:px-0">
           <div className="flex flex-row justify-between items-center">
             <div>
               <h1 className="font-Roboto text-2xl leading-[36px]">Calendar</h1>
@@ -220,7 +220,7 @@ function Calendar() {
             </Tooltip>
           </div>
           <div className="mt-10">
-            <MainCalendar />
+            <MainCalendar setOpen={setOpen} setStartDate={setStartDate} />
           </div>
         </div>
       </div>
