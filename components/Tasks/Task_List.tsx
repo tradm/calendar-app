@@ -219,9 +219,7 @@ function Task_List() {
               <h1 className="font-Roboto text-2xl leading-[36px]">Task List</h1>
               <div className="flex items-center gap-3">
                 <div className="flex items-center mt-2 text-gray-500">
-                  <FiberManualRecordIcon className={`text-[8px] mr-2`} />
                   <p className="text-xs font-semibold">Tasks</p>
-                  <NavigateNextIcon className={`text-base ml-2`} />
                 </div>
                 <Link
                   href={"/calendar"}

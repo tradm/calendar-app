@@ -9,10 +9,12 @@ import MainCalendar from "./MainCalendar";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Link from "next/link";
+import Tasks_Drawer from "./Tasks_Drawer";
 
 function Calendar() {
   const [open, setOpen] = useState(false);
   const [openSnack, setOpenSnack] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [allTasks, setAllTasks] = useState(undefined as any);
@@ -98,6 +100,7 @@ function Calendar() {
   }, []);
   return (
     <div>
+      <Tasks_Drawer allTasks={allTasks} setAllTasks={setAllTasks} openDrawer={openDrawer} setOpenDrawer={setOpenDrawer} />
       <Dialog
         sx={{
           "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
@@ -193,15 +196,13 @@ function Calendar() {
         <div className="my-20 px-5 lg:px-0">
           <div className="flex flex-row justify-between items-center">
             <div>
-              <h1 className="font-Roboto text-2xl leading-[36px]">Calendar</h1>
+              <h1 className="font-Roboto text-2xl leading-[36px] font-semibold">Calendar</h1>
               <div className="flex items-center gap-3">
                 <Link
                   href={"/"}
                   className="flex items-center mt-2 text-gray-500 hover:text-gray-700 hover:underline"
                 >
-                  <FiberManualRecordIcon className={`text-[8px] mr-2`} />
                   <p className="text-xs font-semibold">Tasks</p>
-                  <NavigateNextIcon className={`text-base ml-2`} />
                 </Link>
                 <div className="flex items-center mt-2 text-gray-500">
                   <FiberManualRecordIcon className={`text-[8px] mr-2`} />
@@ -220,7 +221,7 @@ function Calendar() {
             </Tooltip>
           </div>
           <div className="mt-10">
-            <MainCalendar setOpen={setOpen} setStartDate={setStartDate} />
+            <MainCalendar allTasks={allTasks} setAllTasks={setAllTasks} setOpen={setOpen} setStartDate={setStartDate} setOpenDrawer={setOpenDrawer} />
           </div>
         </div>
       </div>

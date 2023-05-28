@@ -46,6 +46,39 @@ export const generateDate = (
   return arrayOfDate;
 };
 
+export const datesAreOnSameDay = (first: any, second: any) =>
+  first.getFullYear() === second.getFullYear() &&
+  first.getMonth() === second.getMonth() &&
+  first.getDate() === second.getDate();
+
+export const getHours = (month = dayjs().month(), year = dayjs().year()) => {
+  const start = dayjs().year(year).month(month).startOf("month");
+
+  return start;
+};
+
+export const generateDateWeek = (
+  month = dayjs().month(),
+  year = dayjs().year(),
+  index: number
+) => {
+  const firstDateOfMonth = dayjs().year(year).month(month).startOf("month");
+  const lastDateOfMonth = dayjs().year(year).month(month).endOf("month");
+
+  return 5;
+};
+
+export const getMonday = () => {
+  const today = dayjs();
+  const first = today.date() - today.day() + 1;
+  return dayjs(today.set("date", first));
+};
+
+export const addDateBy = (date: Date, count: number) => {
+  const d = dayjs(date);
+  return dayjs(d.set("date", d.date() + count));
+};
+
 export const months = [
   "January",
   "February",
