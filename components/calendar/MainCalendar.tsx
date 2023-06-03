@@ -17,6 +17,7 @@ import {
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import WeeklyCalendar from "./WeeklyCalendar";
+import EditTask from "./EditTask";
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function MainCalendar(props: {
@@ -33,31 +34,13 @@ function MainCalendar(props: {
   const [mondayDate, setMondayDate] = useState(getMonday());
   const [selectDate, setSelectDate] = useState(currentDate);
   const [type, setType] = useState("Month");
+  const [dragTaskId, setDragTaskId] = useState("");
+  const [dragTaskIndex, setDragTaskIndex] = useState(0);
+  const [openEdit, setOpenEdit] = useState(false);
 
   const nextWeek = () => setMondayDate(addDateBy(mondayDate.toDate(), 7));
   const prevWeek = () => setMondayDate(addDateBy(mondayDate.toDate(), -7));
 
-  const drag = (index: any, e: React.DragEvent<HTMLDivElement>) => {
-    dragindexRef.current = { index, target: e.target };
-  };
-
-  const onDragEnter = (date: any, e: any) => {
-    e.preventDefault();
-    dragDateRef.current = { date, target: e.target.id };
-  };
-
-  const drop = (ev: any) => {
-    ev.preventDefault();
-
-    props.setAllTasks((prev: any) =>
-      prev.map((ev: any, index: number) => {
-        if (index === dragindexRef.current.index) {
-          ev.date = dragDateRef.current.date;
-        }
-        return ev;
-      })
-    );
-  };
   return (
     <div>
       <div className="new-shadow rounded-xl overflow-hidden">
@@ -117,8 +100,7 @@ function MainCalendar(props: {
               </h1>
             ) : (
               <h1 className="select-none font-semibold">
-                {mondayDate.date()} {mondayDate.format("MMM")},{" "}
-                {mondayDate.year()}
+                {mondayDate.format("MMM")}, {mondayDate.year()}
               </h1>
             )}
             <IconButton
@@ -172,10 +154,23 @@ function MainCalendar(props: {
                   const sunday = dayjs(date).format("ddd");
                   return (
                     <div
+                      title="Double click to add new task"
                       id={`${currentDate.year()}/${currentDate.month()}/${date}`}
-                      onDragEnter={(e) => onDragEnter(dayjs(date), e)}
-                      onDragEnd={drop}
-                      onClick={() => {
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={() => {
+                        const task = props.allTasks?.filter(
+                          (item: any) => item.id === dragTaskId
+                        );
+                        let newTasks = [...props.allTasks];
+                        const startD = dayjs(newTasks[dragTaskIndex].startDate);
+                        const newStartDate = startD
+                          .set("date", date.date())
+                          .set("month", date.month());
+                        newTasks[dragTaskIndex].startDate = newStartDate;
+                        props.setAllTasks(newTasks);
+                        localStorage.setItem("tasks", JSON.stringify(newTasks));
+                      }}
+                      onDoubleClick={() => {
                         props.setStartDate(dayjs(date));
                         props.setOpen(true);
                         // setSelectDate(date);
@@ -207,7 +202,12 @@ function MainCalendar(props: {
                             new Date(date.format())
                           ) && (
                             <div
-                              onDragStart={(e) => drag(index, e)}
+                              onClick={() => setOpenEdit(true)}
+                              key={index}
+                              onDragStart={() => {
+                                setDragTaskId(item.id);
+                                setDragTaskIndex(index);
+                              }}
                               draggable
                               className={`${
                                 item.status === "Finished"
@@ -237,6 +237,10 @@ function MainCalendar(props: {
           <WeeklyCalendar
             mondayDate={mondayDate}
             setMondayDate={setMondayDate}
+            allTasks={props.allTasks}
+            setAllTasks={props.setAllTasks}
+            setStartDate={props.setStartDate}
+            setOpen={props.setOpen}
           />
         )}
       </div>

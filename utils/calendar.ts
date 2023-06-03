@@ -51,6 +51,12 @@ export const datesAreOnSameDay = (first: any, second: any) =>
   first.getMonth() === second.getMonth() &&
   first.getDate() === second.getDate();
 
+export const datesAreOnSameDayHour = (first: any, second: any) =>
+  first.getFullYear() === second.getFullYear() &&
+  first.getMonth() === second.getMonth() &&
+  first.getDate() === second.getDate() &&
+  first.getHours() === second.getHours();
+
 export const getHours = (month = dayjs().month(), year = dayjs().year()) => {
   const start = dayjs().year(year).month(month).startOf("month");
 
@@ -66,6 +72,17 @@ export const generateDateWeek = (
   const lastDateOfMonth = dayjs().year(year).month(month).endOf("month");
 
   return 5;
+};
+
+export const getWeekDates = (days: any, date: any) => {
+  const d = dayjs(date);
+  let arrayOfHour: dayjs.Dayjs[] = [];
+
+  for (let i = 0; i < 24; i++) {
+    arrayOfHour.push(d.hour(i));
+  }
+
+  return arrayOfHour;
 };
 
 export const getMonday = () => {
@@ -92,4 +109,55 @@ export const months = [
   "October",
   "November",
   "December",
+];
+
+export const dayHours = [
+  { time: "12 am" },
+  { time: "" },
+  { time: "1 am" },
+  { time: "" },
+  { time: "2 am" },
+  { time: "" },
+  { time: "3 am" },
+  { time: "" },
+  { time: "4 am" },
+  { time: "" },
+  { time: "5 am" },
+  { time: "" },
+  { time: "6 am" },
+  { time: "" },
+  { time: "7 am" },
+  { time: "" },
+  { time: "8 am" },
+  { time: "" },
+  { time: "9 am" },
+  { time: "" },
+  { time: "10 am" },
+  { time: "" },
+  { time: "11 am" },
+  { time: "" },
+  { time: "12 pm" },
+  { time: "" },
+  { time: "1 pm" },
+  { time: "" },
+  { time: "2 pm" },
+  { time: "" },
+  { time: "3 pm" },
+  { time: "" },
+  { time: "4 pm" },
+  { time: "" },
+  { time: "5 pm" },
+  { time: "" },
+  { time: "6 pm" },
+  { time: "" },
+  { time: "7 pm" },
+  { time: "" },
+  { time: "8 pm" },
+  { time: "" },
+  { time: "9 pm" },
+  { time: "" },
+  { time: "10 pm" },
+  { time: "" },
+  { time: "11 pm" },
+  { time: "" },
 ];
