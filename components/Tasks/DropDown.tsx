@@ -1,23 +1,28 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Divider } from "@mui/material";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import Edit_Task from "./Edit_Task";
+import EditTask from "./EditTask";
 import { useRouter } from "next/router";
+import MainBox from "../Styled/MainBox";
+import MainMenu from "../Styled/MainMenu";
+import MainDivider from "../Styled/MainDivider";
+import MainIconButton from "../Styled/MainIconButton";
+import { alltaskprops, taskItem } from "../../types/tasks";
 
 export default function DropDown(props: {
-  allTasks: any;
-  setAllTasks: any;
-  item: any;
+  allTasks: alltaskprops;
+  setAllTasks: React.Dispatch<React.SetStateAction<alltaskprops | undefined>>;
+  item: taskItem;
   index: number;
-  setOpenSnack: any;
-  handleCloseSnack: any;
+  setOpenSnack: React.Dispatch<React.SetStateAction<boolean>>;
+  handleCloseSnack: (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => void;
 }) {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -30,51 +35,40 @@ export default function DropDown(props: {
   };
 
   const handleDelete = () => {
-    const newTasks = props.allTasks.filter(
-      (item: any, index: number) => item.id !== props.item.id
+    const newTasks = props.allTasks.data.filter(
+      (item: taskItem) => item.id !== props.item.id
     );
     localStorage.setItem("tasks", JSON.stringify(newTasks));
-    props.setAllTasks(newTasks);
+    props.setAllTasks({ data: newTasks });
     handleClose();
   };
 
   const handleMarkAsFinished = () => {
-    let storeTasks = [...props.allTasks];
+    let storeTasks = [...props.allTasks.data];
     storeTasks[props.index].status = "Finished";
     localStorage.setItem("tasks", JSON.stringify(storeTasks));
-    props.setAllTasks(storeTasks);
+    props.setAllTasks({ data: storeTasks });
     handleClose();
   };
   return (
     <React.Fragment>
-      <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
-        <IconButton
+      <MainBox>
+        <MainIconButton
           onClick={handleClick}
           size="small"
-          sx={{ ml: 2 }}
           aria-controls={open ? "account-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
         >
           <MoreVertIcon />
-        </IconButton>
-      </Box>
-      <Menu
+        </MainIconButton>
+      </MainBox>
+      <MainMenu
         anchorEl={anchorEl}
         id="account-menu"
         open={open}
         onClose={handleClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: "visible",
-            borderRadius: "10px",
-            boxShadow:
-              "0px 0px 2px 0px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)",
-            mt: 0,
-            px: 1,
-          },
-        }}
+        PaperProps={{ elevation: 0 }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
@@ -87,9 +81,9 @@ export default function DropDown(props: {
               <FiberManualRecordIcon
                 className={`text-[8px] mr-3 text-green-600`}
               />
-              <span>Mark As Finshed</span>
+              <span>Mark As Finished</span>
             </MenuItem>
-            <Divider sx={{ borderStyle: "dashed" }} className="my-1" />
+            <MainDivider className="my-1" />
           </Box>
         )}
         <MenuItem
@@ -100,7 +94,7 @@ export default function DropDown(props: {
         >
           <VisibilityIcon className="mr-3 text-base" /> <span>View</span>
         </MenuItem>
-        <Edit_Task
+        <EditTask
           item={props.item}
           tasks={props.allTasks}
           setTasks={props.setAllTasks}
@@ -109,14 +103,14 @@ export default function DropDown(props: {
           setOpenSnack={props.setOpenSnack}
           handleCloseSnack={props.handleCloseSnack}
         />
-        <Divider sx={{ borderStyle: "dashed" }} className="my-1" />
+        <MainDivider className="my-1" />
         <MenuItem
           className="text-sm rounded-md flex items-center text-orange-600"
           onClick={handleDelete}
         >
           <DeleteIcon className="mr-3 text-base" /> <span>Delete</span>
         </MenuItem>
-      </Menu>
+      </MainMenu>
     </React.Fragment>
   );
 }

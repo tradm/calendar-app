@@ -1,4 +1,3 @@
-import React, { useRef, useState } from "react";
 import {
   addDateBy,
   datesAreOnSameDay,
@@ -6,69 +5,52 @@ import {
   getMonday,
   months,
 } from "@/utils/calendar";
-import dayjs from "dayjs";
-import {
-  Button,
-  FormControl,
-  IconButton,
-  MenuItem,
-  Select,
-} from "@mui/material";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { Button, IconButton, MenuItem } from "@mui/material";
+import dayjs from "dayjs";
+import React, { useState } from "react";
 import WeeklyCalendar from "./WeeklyCalendar";
-import EditTask from "./EditTask";
+import MainFormControl from "../Styled/MainFormControl";
+import MainSelect from "../Styled/MainSelect";
+import { alltaskprops, taskItem } from "../../types/tasks";
+
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function MainCalendar(props: {
-  setOpen: any;
-  setStartDate: any;
-  setOpenDrawer: any;
-  allTasks: any;
-  setAllTasks: any;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setStartDate: React.Dispatch<React.SetStateAction<string | Date>>;
+  setOpenDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+  allTasks: alltaskprops;
+  setAllTasks: React.Dispatch<React.SetStateAction<alltaskprops | undefined>>;
 }) {
-  const dragDateRef = useRef<any>();
-  const dragindexRef = useRef<any>();
   const currentDate = dayjs();
-  const [today, setToday] = useState(currentDate);
-  const [mondayDate, setMondayDate] = useState(getMonday());
-  const [selectDate, setSelectDate] = useState(currentDate);
-  const [type, setType] = useState("Month");
-  const [dragTaskId, setDragTaskId] = useState("");
-  const [dragTaskIndex, setDragTaskIndex] = useState(0);
-  const [openEdit, setOpenEdit] = useState(false);
+  const [today, setToday] = useState<dayjs.Dayjs>(currentDate);
+  const [mondayDate, setMondayDate] = useState<dayjs.Dayjs>(getMonday());
+  const [type, setType] = useState<string>("Month");
+  const [dragTaskId, setDragTaskId] = useState<string>("");
+  const [dragTaskIndex, setDragTaskIndex] = useState<number>(0);
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
 
   const nextWeek = () => setMondayDate(addDateBy(mondayDate.toDate(), 7));
   const prevWeek = () => setMondayDate(addDateBy(mondayDate.toDate(), -7));
+
+  // event type any required here
+  const handleSelect = (e: any) => {
+    setType(e.target.value);
+  };
 
   return (
     <div>
       <div className="new-shadow rounded-xl overflow-hidden">
         <div className="flex justify-between items-center p-5">
           {/* Select Calendar Type */}
-          <FormControl
-            className="text-sm"
-            sx={{
-              m: 0,
-              minWidth: 120,
-              "& .css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root":
-                { borderRadius: "10px" },
-              "& .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input":
-                { py: "6px" },
-              "& .css-1x7s2qr-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                { borderWidth: 0, borderColor: "transparent" },
-            }}
-          >
-            <Select
-              sx={{
-                "& .css-1d3z3hw-MuiOutlinedInput-notchedOutline": {
-                  borderWidth: 0,
-                },
-                borderRadius: "10px",
-              }}
+          <MainFormControl className="text-sm">
+            <MainSelect
               className="bg-gray-200 text-sm"
               value={type}
-              onChange={(e) => setType(e.target.value)}
+              onChange={handleSelect}
               displayEmpty
               inputProps={{ "aria-label": "Without label" }}
             >
@@ -78,8 +60,9 @@ function MainCalendar(props: {
               <MenuItem className="text-sm" value={"Week"}>
                 Week
               </MenuItem>
-            </Select>
-          </FormControl>
+            </MainSelect>
+          </MainFormControl>
+          
           <div className="flex items-center gap-3">
             <IconButton
               onClick={() => {
@@ -130,7 +113,7 @@ function MainCalendar(props: {
               Today
             </Button>
             <IconButton onClick={() => props.setOpenDrawer(true)} size="small">
-              <i className="fa-solid fa-bars-filter m-1 font-bold text-[16px]"></i>
+              <FilterListIcon />
             </IconButton>
           </div>
         </div>
@@ -158,33 +141,25 @@ function MainCalendar(props: {
                       id={`${currentDate.year()}/${currentDate.month()}/${date}`}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={() => {
-                        const task = props.allTasks?.filter(
-                          (item: any) => item.id === dragTaskId
-                        );
-                        let newTasks = [...props.allTasks];
+                        let newTasks = [...props.allTasks.data];
                         const startD = dayjs(newTasks[dragTaskIndex].startDate);
                         const newStartDate = startD
                           .set("date", date.date())
                           .set("month", date.month());
-                        newTasks[dragTaskIndex].startDate = newStartDate;
-                        props.setAllTasks(newTasks);
+                        newTasks[dragTaskIndex].startDate =
+                          newStartDate.toString();
+                        props.setAllTasks({ data: newTasks });
                         localStorage.setItem("tasks", JSON.stringify(newTasks));
                       }}
                       onDoubleClick={() => {
-                        props.setStartDate(dayjs(date));
+                        props.setStartDate(dayjs(date).toString());
                         props.setOpen(true);
-                        // setSelectDate(date);
                       }}
                       key={index}
                       className={`p-2 text-center min-h-[95px] ${
                         sunday === "Sun" ? "border-r-0" : "border-r"
                       } text-sm border-t hover:bg-gray-50 ${
                         today ? "bg-gray-100" : "bg-white"
-                      } ${
-                        selectDate.toDate().toDateString() ===
-                        date.toDate().toDateString()
-                          ? "text-orange-600"
-                          : ""
                       }`}
                     >
                       <h1
@@ -194,39 +169,41 @@ function MainCalendar(props: {
                       >
                         {date.date()}
                       </h1>
-                      {props.allTasks?.map((item: any, index: number) => {
-                        const startDate = dayjs(item.startDate);
-                        return (
-                          datesAreOnSameDay(
-                            new Date(item.startDate),
-                            new Date(date.format())
-                          ) && (
-                            <div
-                              onClick={() => setOpenEdit(true)}
-                              key={index}
-                              onDragStart={() => {
-                                setDragTaskId(item.id);
-                                setDragTaskIndex(index);
-                              }}
-                              draggable
-                              className={`${
-                                item.status === "Finished"
-                                  ? "bg-green-200 text-green-700 border-green-500"
-                                  : "bg-orange-200 text-orange-700 border-orange-500"
-                              } border mb-1 rounded-md hover:cursor-pointer`}
-                            >
-                              <div className="px-1 w-full">
-                                <h3 className="line-clamp-2 overflow-ellipsis text-left">
-                                  <span className="text-xs font-bold mr-1 whitespace-nowrap">
-                                    {startDate.format("h a")}
-                                  </span>
-                                  {item.title}
-                                </h3>
+                      {props.allTasks?.data.map(
+                        (item: taskItem, index: number) => {
+                          const startDate = dayjs(item.startDate);
+                          return (
+                            datesAreOnSameDay(
+                              new Date(item.startDate),
+                              new Date(date.format())
+                            ) && (
+                              <div
+                                onClick={() => setOpenEdit(true)}
+                                key={index}
+                                onDragStart={() => {
+                                  setDragTaskId(item.id);
+                                  setDragTaskIndex(index);
+                                }}
+                                draggable
+                                className={`${
+                                  item.status === "Finished"
+                                    ? "bg-green-200 text-green-700 border-green-500"
+                                    : "bg-orange-200 text-orange-700 border-orange-500"
+                                } border mb-1 rounded-md hover:cursor-pointer`}
+                              >
+                                <div className="px-1 w-full">
+                                  <h3 className="line-clamp-2 overflow-ellipsis text-left">
+                                    <span className="text-xs font-bold mr-1 whitespace-nowrap">
+                                      {startDate.format("h a")}
+                                    </span>
+                                    {item.title}
+                                  </h3>
+                                </div>
                               </div>
-                            </div>
-                          )
-                        );
-                      })}
+                            )
+                          );
+                        }
+                      )}
                     </div>
                   );
                 }

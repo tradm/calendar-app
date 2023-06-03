@@ -1,90 +1,87 @@
-import {
-  Alert,
-  Button,
-  ButtonGroup,
-  Dialog,
-  Snackbar,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { Alert, Button, Snackbar, Tooltip } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import Link from "next/link";
 import SimpleBar from "simplebar-react";
 import localTasks from "@/json/tasks.json";
-import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import { v4 as uuidv4 } from "uuid";
 import DropDown from "./DropDown";
 import dayjs from "dayjs";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import MainDialog from "../Styled/MainDialog";
+import MainTextField from "../Styled/MainTextField";
+import MainMobileDateTimePicker from "../Styled/MainMobileDateTimePicker";
+import { alltaskprops, taskItem, newtaskprops } from "../../types/tasks";
 
-function Task_List() {
-  const [open, setOpen] = useState(false);
-  const [openSnack, setOpenSnack] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [allTasks, setAllTasks] = useState(undefined as any);
-  const [startDate, setStartDate] = useState(undefined as any);
-  const [endDate, setEndDate] = useState(undefined as any);
+function TaskList() {
+  const [open, setOpen] = useState<boolean>(false);
+  const [openSnack, setOpenSnack] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [allTasks, setAllTasks] = useState<alltaskprops>();
+  const [startDate, setStartDate] = useState<string | Date>("");
+  const [endDate, setEndDate] = useState<string | Date>("");
 
+  const defaultStartDate = dayjs();
   const defaultEndDate = dayjs(startDate).add(1, "hour") as any;
 
   const handleAddTask = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let newTask: any[] = [];
+    let newTask: newtaskprops = { data: [] };
 
-    if (allTasks) {
-      newTask = [
+    if (allTasks?.data) {
+      newTask.data = [
         {
           id: uuidv4().substring(0, 6),
           title: title,
           description: description,
-          startDate: startDate,
-          endDate: endDate,
+          startDate: startDate.toString(),
+          endDate: endDate.toString(),
           status: "Not Finished",
         },
-        ...allTasks,
+        ...allTasks.data,
       ];
     } else {
-      newTask = [
+      newTask.data = [
         {
           id: uuidv4().substring(0, 6),
           title: title,
           description: description,
-          startDate: startDate,
-          endDate: endDate,
+          startDate: startDate.toString(),
+          endDate: endDate.toString(),
           status: "Not Finished",
         },
       ];
     }
 
-    localStorage.setItem("tasks", JSON.stringify(newTask));
+    localStorage.setItem("tasks", JSON.stringify(newTask.data));
     setAllTasks(newTask);
-    setStartDate(undefined);
-    setEndDate(undefined);
+    setStartDate("");
+    setEndDate("");
     setOpen(false);
   };
 
-  const handleStartDateChange = (value: Date | null) => {
+  //event type any required here
+  const handleStartDateChange = (value: any) => {
     const date = dayjs(value);
     setStartDate(date.format());
   };
 
-  const handleEndDateChange = (value: Date | null) => {
+  //event type any required here
+  const handleEndDateChange = (value: any) => {
     const date = dayjs(value);
     setEndDate(date.format());
   };
 
   const handleClose = () => {
-    setStartDate(undefined);
-    setEndDate(undefined);
+    setStartDate(dayjs().toString());
+    setEndDate("");
     setOpen(false);
   };
 
   const handleCloseSnack = (
-    event?: React.SyntheticEvent | Event,
+    _event?: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === "clickaway") {
@@ -94,14 +91,15 @@ function Task_List() {
   };
 
   useEffect(() => {
+    setStartDate(defaultStartDate.toString());
     if (typeof window !== undefined) {
       const tasks = localStorage.getItem("tasks");
       if (tasks) {
-        const data = JSON.parse(tasks as any);
-        setAllTasks(data);
+        const data = JSON.parse(tasks as string);
+        setAllTasks({ data: data });
       } else {
         localStorage.setItem("tasks", JSON.stringify(localTasks));
-        setAllTasks(localTasks);
+        setAllTasks({ data: localTasks });
       }
     }
   }, []);
@@ -121,27 +119,14 @@ function Task_List() {
           Update Successfull!
         </Alert>
       </Snackbar>
-      <Dialog
-        sx={{
-          "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
-            borderRadius: "15px",
-          },
-        }}
-        open={open}
-        onClose={handleClose}
-      >
+      <MainDialog open={open} onClose={handleClose}>
         <form onSubmit={handleAddTask} className="p-5">
           <h1 className="font-Roboto text-xl font-bold mb-7 text-center">
             Add Task
           </h1>
           <div className="w-96">
             <div className="my-3">
-              <TextField
-                sx={{
-                  "& .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root": {
-                    borderRadius: "10px",
-                  },
-                }}
+              <MainTextField
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full"
                 id="outlined-basic"
@@ -151,12 +136,7 @@ function Task_List() {
               />
             </div>
             <div className="my-3">
-              <TextField
-                sx={{
-                  "& .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root": {
-                    borderRadius: "10px",
-                  },
-                }}
+              <MainTextField
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full"
                 id="outlined-basic"
@@ -167,34 +147,22 @@ function Task_List() {
             </div>
             <div className="my-3">
               <h3 className="mb-2 font-semibold">Starting Time</h3>
-              <MobileDateTimePicker
-                defaultValue={startDate}
+              <MainMobileDateTimePicker
+                defaultValue={dayjs(startDate) as any}
                 onChange={handleStartDateChange}
-                sx={{
-                  "& .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root": {
-                    borderRadius: "10px",
-                  },
-                }}
                 className="w-full"
               />
             </div>
-            {startDate && (
-              <div className="my-3">
-                <h3 className="mb-2 font-semibold">Duration Till</h3>
-                <MobileDateTimePicker
-                  defaultValue={defaultEndDate}
-                  disablePast
-                  minDateTime={defaultEndDate}
-                  onChange={handleEndDateChange}
-                  sx={{
-                    "& .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root": {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  className="w-full"
-                />
-              </div>
-            )}
+            <div className="my-3">
+              <h3 className="mb-2 font-semibold">Duration Till</h3>
+              <MainMobileDateTimePicker
+                defaultValue={defaultEndDate}
+                disablePast
+                minDateTime={defaultEndDate}
+                onChange={handleEndDateChange}
+                className="w-full"
+              />
+            </div>
             <div className="flex justify-end items-center gap-3 mt-7">
               <Button
                 onClick={handleClose}
@@ -211,7 +179,7 @@ function Task_List() {
             </div>
           </div>
         </form>
-      </Dialog>
+      </MainDialog>
       <div className="container max-w-6xl px-5 xl:px-0 m-auto font-Roboto">
         <div className="my-20">
           <div className="flex flex-row justify-between items-center">
@@ -249,7 +217,7 @@ function Task_List() {
               <p className="col-span-2">Status</p>
             </div>
             <SimpleBar className="max-h-[60vh]" autoHide>
-              {allTasks?.map((item: any, index: number) => (
+              {allTasks?.data.map((item: taskItem, index: number) => (
                 <div
                   key={index}
                   className="font-normal text-sm font-Roboto items-center grid grid-cols-12 p-5 hover:bg-[#f4f6f8] gap-3 border-b"
@@ -303,4 +271,4 @@ function Task_List() {
   );
 }
 
-export default Task_List;
+export default TaskList;

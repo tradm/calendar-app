@@ -63,17 +63,6 @@ export const getHours = (month = dayjs().month(), year = dayjs().year()) => {
   return start;
 };
 
-export const generateDateWeek = (
-  month = dayjs().month(),
-  year = dayjs().year(),
-  index: number
-) => {
-  const firstDateOfMonth = dayjs().year(year).month(month).startOf("month");
-  const lastDateOfMonth = dayjs().year(year).month(month).endOf("month");
-
-  return 5;
-};
-
 export const getWeekDates = (days: any, date: any) => {
   const d = dayjs(date);
   let arrayOfHour: dayjs.Dayjs[] = [];

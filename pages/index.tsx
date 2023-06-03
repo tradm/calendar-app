@@ -1,4 +1,4 @@
-import Task_List from "@/components/Tasks/Task_List";
+import TaskList from "@/components/Tasks/TaskList";
 import { NextPage } from "next";
 import Head from "next/head";
 import React from "react";
@@ -14,7 +14,7 @@ const Home: NextPage = (props: any) => {
         <link rel="icon" href="/assets/logo.png" />
       </Head>
       <div className="w-full">
-        <Task_List />
+        <TaskList />
       </div>
     </>
   );

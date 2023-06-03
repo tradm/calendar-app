@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import React from "react";
 
-const Home: NextPage = (props: any) => {
+const Home: NextPage = () => {
   return (
     <>
       <Head>
